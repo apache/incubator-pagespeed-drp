@@ -15,11 +15,11 @@
 {
   'variables': {
     'chromium_code': 1,
-    'out_dir': '<(SHARED_INTERMEDIATE_DIR)/registry_tables_generator_out/registry_tables_genfiles',
+    'out_dir': '<(SHARED_INTERMEDIATE_DIR)/registry_tables_generator_out',
     'executable': 'registry_tables_generator.py',
     'in_dat_file': '../third_party/effective_tld_names/effective_tld_names.dat',
-    'out_registry_file': '<(out_dir)/registry_tables.c',
-    'out_registry_test_file': '<(out_dir)/test_registry_tables.c',
+    'out_registry_file': '<(out_dir)/registry_tables_genfiles/registry_tables.c',
+    'out_registry_test_file': '<(out_dir)/registry_tables_genfiles/test_registry_tables.c',
     'src_py_files': [
       'registry_tables_generator.py',
       'node_table_builder.py',
@@ -37,6 +37,11 @@
       'sources': [
         '<(in_dat_file)',
       ],
+      'direct_dependent_settings': {
+        'include_dirs': [
+          '<(out_dir)',
+        ]
+      },
       'rules': [
         {
           'rule_name': 'generate_registry_tables',
