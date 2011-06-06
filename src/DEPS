@@ -13,29 +13,21 @@
 # limitations under the License.
 
 vars = {
-  "chromium_trunk":
-    "http://src.chromium.org/svn/trunk",
-  "chromium_revision": "@87976",
-  "chromium_deps_root": "src/third_party/chromium_deps",
+  "googlecode_url": "http://%s.googlecode.com/svn",
 }
 
 deps = {
-  # Fetch chromium DEPS so we can sync our other dependencies relative
-  # to it.
-  Var("chromium_deps_root"):
-    File(Var("chromium_trunk") + "/src/DEPS" + Var("chromium_revision")),
-
-  "src/testing":
-    Var("chromium_trunk") + "/src/testing" + Var("chromium_revision"),
-
-  "src/testing/gtest": From(Var("chromium_deps_root")),
-  "src/tools/gyp": From(Var("chromium_deps_root")),
+  "src/tools/gyp":
+    (Var("googlecode_url") % "gyp") + "/trunk@932",
 }
 
 deps_os = {
   "win": {
-    "src/third_party/cygwin": From(Var("chromium_deps_root")),
-    "src/third_party/python_26": From(Var("chromium_deps_root")),
+    "src/third_party/cygwin":
+      "/trunk/deps/third_party/cygwin@66844",
+
+    "src/third_party/python_26":
+      "/trunk/tools/third_party/python_26@70627",
   },
   "mac": {
   },
