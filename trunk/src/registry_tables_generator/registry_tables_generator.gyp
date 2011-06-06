@@ -14,30 +14,24 @@
 
 {
   'variables': {
-    'variables': {
-      'domain_registry_provider_relpath%': '.',
-    },
-    'domain_registry_provider_relpath%': '<(domain_registry_provider_relpath)',
-    'domain_registry_provider_root': '<(DEPTH)/<(domain_registry_provider_relpath)',
-    'registry_tables_generator_root': '<(domain_registry_provider_root)/registry_tables_generator',
     'chromium_code': 1,
-    'out_dir': '<(SHARED_INTERMEDIATE_DIR)/registry_tables_generator_out',
-    'executable': '<(registry_tables_generator_root)/registry_tables_generator.py',
-    'in_dat_file': '<(DEPTH)/third_party/effective_tld_names/effective_tld_names.dat',
-    'out_registry_file': '<(out_dir)/<(domain_registry_provider_relpath)/registry_tables.c',
-    'out_registry_test_file': '<(out_dir)/<(domain_registry_provider_relpath)/test_registry_tables.c',
+    'out_dir': '<(SHARED_INTERMEDIATE_DIR)/registry_tables_generator_out/registry_tables_genfiles',
+    'executable': 'registry_tables_generator.py',
+    'in_dat_file': '../third_party/effective_tld_names/effective_tld_names.dat',
+    'out_registry_file': '<(out_dir)/registry_tables.c',
+    'out_registry_test_file': '<(out_dir)/test_registry_tables.c',
     'src_py_files': [
-      '<(registry_tables_generator_root)/registry_tables_generator.py',
-      '<(registry_tables_generator_root)/node_table_builder.py',
-      '<(registry_tables_generator_root)/string_table_builder.py',
-      '<(registry_tables_generator_root)/table_serializer.py',
-      '<(registry_tables_generator_root)/test_table_builder.py',
-      '<(registry_tables_generator_root)/trie_node.py',
+      'registry_tables_generator.py',
+      'node_table_builder.py',
+      'string_table_builder.py',
+      'table_serializer.py',
+      'test_table_builder.py',
+      'trie_node.py',
     ],
   },
   'targets': [
     {
-      'target_name': 'registry_tables_generator',
+      'target_name': 'generate_registry_tables',
       'type': 'none',
       'hard_dependency': 1,
       'sources': [
@@ -45,7 +39,7 @@
       ],
       'rules': [
         {
-          'rule_name': 'registry_tables_generator',
+          'rule_name': 'generate_registry_tables',
           'extension': 'dat',
           'inputs': [
             '<@(src_py_files)',
