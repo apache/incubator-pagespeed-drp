@@ -14,7 +14,10 @@
 
 {
   'variables': {
-    'domain_registry_provider_relpath%': '.',
+    'variables': {
+      'domain_registry_provider_relpath%': '.',
+    },
+    'domain_registry_provider_relpath%': '<(domain_registry_provider_relpath)',
     'domain_registry_provider_root': '<(DEPTH)/<(domain_registry_provider_relpath)',
     'registry_tables_generator_root': '<(domain_registry_provider_root)/registry_tables_generator',
     'chromium_code': 1,
