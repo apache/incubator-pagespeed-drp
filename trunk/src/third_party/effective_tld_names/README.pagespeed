@@ -1,0 +1,28 @@
+URL: http://publicsuffix.org/
+     http://mxr.mozilla.org/mozilla-central/source/netwerk/dns/effective_tld_names.dat
+Version: Downloaded 4/8/2011 from
+         http://hg.mozilla.org/mozilla-central/raw-file/86e1ba3e495a/netwerk/dns/effective_tld_names.dat
+License: MPL 1.1
+License File: LICENSE
+
+Description:
+effective_tld_names contains the public suffix list. From publicsuffix.org:
+
+A "public suffix" is one under which Internet users can directly
+register names. Some examples of public suffixes are ".com", ".co.uk"
+and "pvt.k12.wy.us". The Public Suffix List is a list of all known
+public suffixes.
+
+The Public Suffix List is an initiative of the Mozilla Project, but is
+maintained as a community resource. It is available for use in any
+software, but was originally creaated to meet the needs of browser
+manufacturers. It allows browsers to, for example:
+
+* Avoid privacy-damaging "supercookies" being set for high-level
+  domain name suffixes
+* Highlight the most important part of a domain name in the user
+  interface
+* Accurately sort history entries by site
+
+Local Modifications:
+None
