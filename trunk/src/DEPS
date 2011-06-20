@@ -13,21 +13,25 @@
 # limitations under the License.
 
 vars = {
+  "chromium_trunk": "http://src.chromium.org/svn/trunk",
   "googlecode_url": "http://%s.googlecode.com/svn",
 }
 
 deps = {
+  "src/testing/gtest":
+    (Var("googlecode_url") % "googletest") + "/tags/release-1.6.0@head",
+
   "src/tools/gyp":
-    (Var("googlecode_url") % "gyp") + "/trunk@932",
+    (Var("googlecode_url") % "gyp") + "/trunk@933",
 }
 
 deps_os = {
   "win": {
     "src/third_party/cygwin":
-      "/trunk/deps/third_party/cygwin@66844",
+      Var("chromium_trunk") + "/deps/third_party/cygwin@66844",
 
     "src/third_party/python_26":
-      "/trunk/tools/third_party/python_26@70627",
+      Var("chromium_trunk") + "/tools/third_party/python_26@89111",
   },
   "mac": {
   },
