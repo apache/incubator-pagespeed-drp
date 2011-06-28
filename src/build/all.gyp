@@ -19,7 +19,7 @@
       'type': 'none',
       'xcode_create_dependents_test_runner': 1,
       'dependencies': [
-        '../registry_tables_generator/registry_tables_generator.gyp:*',
+        '../domain_registry/domain_registry.gyp:*',
       ],
     }
   ]
