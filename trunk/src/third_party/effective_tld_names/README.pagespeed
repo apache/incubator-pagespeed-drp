@@ -1,7 +1,7 @@
 URL: http://publicsuffix.org/
      http://mxr.mozilla.org/mozilla-central/source/netwerk/dns/effective_tld_names.dat
-Version: Downloaded 4/8/2011 from
-         http://hg.mozilla.org/mozilla-central/raw-file/86e1ba3e495a/netwerk/dns/effective_tld_names.dat
+Version: Downloaded 6/28/2011 from
+         http://hg.mozilla.org/mozilla-central/raw-file/2760ca666cfc/netwerk/dns/effective_tld_names.dat
 License: MPL 1.1
 License File: LICENSE
 
