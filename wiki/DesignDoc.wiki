@@ -76,7 +76,7 @@ static const struct TrieNode kNodeTable[] = {
 };
 }}}
 
-We use pragma pack to prevent the compiler from padding the structure to 8 bytes (more on this later).
+We use pragma pack to prevent the compiler from padding the structure to 8 bytes.
 
 `string_table_offset` is an offset into the kStringTable for the given entry, `first_child_offset` is the offset of the first child node of the current node in the `kNodeTable`, `num_children` is the number of children for the node, and `is_terminal` indicates whether the given node is a terminal component for a given public suffix rule (e.g. "edu" and "gov" would be terminal nodes). Some non-leaf nodes can be terminal nodes, which is why `is_terminal` is necessary.
 
