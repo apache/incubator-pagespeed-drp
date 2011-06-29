@@ -82,7 +82,7 @@ We use pragma pack to prevent the compiler from padding the structure to 8 bytes
 
 Constructing such a trie using the current public suffix ruleset yields ~3800 nodes, or ~19kB of storage, for a total of ~36kB for both the string table and the node array.
 
-Notice that all leaf nodes in the trie have 0 children and are necessarily roots, so some storage is wasted by storing a full `TrieNode` for each. To reduce space we can partition nodes into two sets: nodes where all siblings are leaf nodes, and nodes where not all siblings are leaf nodes. Nodes where all siblings are leaves can be represented in 2 bytes each (a string_table_offset per node) while remaining nodes are represented with a 5-byte `TrieNode`. We find that ~2500 of the ~3800 nodes fit into the former category, and can be represented in 2 bytes each, for a total node storage requirement of 2 * 2500 = 5kB and 5 * 1300 = 6.5kB = 11.5kB total, or ~29kB for string table and the node arrays. Example structures are shown below:
+Notice that all leaf nodes in the trie have 0 children and are necessarily roots, so some storage is wasted by storing a full `TrieNode` for each. To reduce space we can partition nodes into two sets: nodes where all siblings are leaf nodes, and nodes where not all siblings are leaf nodes. Nodes where all siblings are leaves can be represented in 2 bytes each (a string_table_offset per node) while remaining nodes are represented with a 5-byte `TrieNode`. We find that ~2500 of the ~3800 nodes fit into the former category, and can be represented in 2 bytes each, for a total node storage requirement of 2 x 2500 = 5kB and 5 x 1300 = 6.5kB = 11.5kB total, or ~29kB for string table and the node arrays. Example structures are shown below:
 
 {{{
 static const struct TrieNode kNodeTable[] = {
@@ -107,6 +107,6 @@ An optimized trie implementation shows an ~20% performance cost over the gperf i
 
 === Test Methodolody ===
 
-Tests were run on an Ubuntu Lucid laptop using a test set that includes one entry for each of the ~4000 rules in the publicsuffix dat file. Wildcards were replaced with the string 'wildcard' and the '!' at the beginning of each exception rule was removed. Each rule was then prepended with 'www.example'. For instance 'com' becomes 'www.example.com', '**.ye' becomes 'w3.wildcard.ye', and '!educ.ar' becomes 'www.educ.ar'.
+Tests were run on an Ubuntu Lucid laptop using a test set that includes one entry for each of the ~4000 rules in the publicsuffix dat file. Wildcards were replaced with the string 'wildcard' and the '!' at the beginning of each exception rule was removed. Each rule was then prepended with `www.example`. For instance `com` becomes `www.example.com`, `*.ye` becomes `w3.wildcard.ye`, and `!educ.ar` becomes `www.educ.ar`.
 
-Each test was run 10 times, alternating between control and experiment to minimize possible inaccuracies due to changes in system load. Each test ran 10000 iterations of all the test cases in order, for a total of 3696*10000 tests. Test binaries were compiled with -02 and stripped. Tests were timed with the bash builtin 'time' command.
+Each test was run 10 times, alternating between control and experiment to minimize possible inaccuracies due to changes in system load. Each test ran 10000 iterations of all the test cases in order, for a total of 3696x10000 tests. Test binaries were compiled with -02 and stripped. Tests were timed with the bash builtin 'time' command.
