@@ -23,5 +23,6 @@ src_root = os.path.normpath(os.path.join(script_dir, os.pardir))
 sys.path.insert(0, os.path.join(src_root, 'tools', 'gyp', 'pylib'))
 import gyp
 if __name__ == '__main__':
-  args = [ os.path.join(script_dir, 'all.gyp') ]
+  args = sys.argv[1:]
+  args.append(os.path.join(script_dir, 'all.gyp'))
   sys.exit(gyp.main(args))
