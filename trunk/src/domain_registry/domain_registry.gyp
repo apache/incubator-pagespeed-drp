@@ -18,10 +18,15 @@
       'target_name': 'domain_registry_lib',
       'type': 'static_library',
       'dependencies': [
-        'assert',
+        'assert_lib',
       ],
       'sources': [
+        'private/registry_search.c',
+        'private/registry_search.h',
+        'private/registry_types.h',
+        'private/string_util.h',
         'private/trie_search.c',
+        'private/trie_search.h',
       ],
       'include_dirs': [
         '..',
@@ -32,14 +37,40 @@
         ],
       },
     },
+    {
+      'target_name': 'init_registry_tables_lib',
+      'type': 'static_library',
+      'dependencies': [
+        '../registry_tables_generator/registry_tables_generator.gyp:generate_registry_tables',
+        'domain_registry_lib',
+      ],
+      'sources': [
+        'private/init_registry_tables.c',
+      ],
+      'include_dirs': [
+        '..',
+      ],
+    },
 
     # The following targets are "private" and should not be referenced
     # from outside this package.
     {
-      'target_name': 'assert',
+      'target_name': 'domain_registry',
+      'type': 'executable',
+      'dependencies': [
+        'domain_registry_lib',
+        'init_registry_tables_lib',
+      ],
+      'sources': [
+        'example.c',
+      ],
+    },
+    {
+      'target_name': 'assert_lib',
       'type': 'static_library',
       'sources': [
         'private/assert.c',
+        'private/assert.h',
       ],
       'include_dirs': [
         '..',
@@ -49,11 +80,15 @@
       'target_name': 'domain_registry_test',
       'type': 'executable',
       'dependencies': [
+        '../registry_tables_generator/registry_tables_generator.gyp:generate_registry_tables',
         'domain_registry_lib',
+        'init_registry_tables_lib',
         '<(DEPTH)/testing/gtest.gyp:gtest',
         '<(DEPTH)/testing/gtest.gyp:gtest_main',
       ],
       'sources': [
+        'domain_registry_test.cc',
+        'private/registry_search_test.cc',
         'private/string_util_test.cc',
         'private/trie_search_test.cc',
       ],
@@ -62,6 +97,19 @@
           'cflags': [ '-pthread' ],
           'ldflags': [ '-pthread' ],
         }],
+      ],
+    },
+    {
+      'target_name': 'domain_registry_perf_test',
+      'suppress_wildcard': 1,
+      'type': 'executable',
+      'dependencies': [
+        '../registry_tables_generator/registry_tables_generator.gyp:generate_registry_tables',
+        'domain_registry_lib',
+        'init_registry_tables_lib',
+      ],
+      'sources': [
+        'domain_registry_perf_test.c',
       ],
     },
   ],
