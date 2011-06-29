@@ -17,7 +17,7 @@ In net/base, we use registry_controlled_domain.cc to determine the public suffix
 
 Chromium uses a gperf-based implementation to search through the list of rules. The implementation is very runtime-efficient and requires no startup time or heap-allocated storage. However it adds ~170kB to 32-bit binaries, and ~200kB to 64-bit binaries.
 
-Page Speed would like an implementation that reduces binary size and memory footprint but is also startup and runtime efficient. Since Page Speed bundles one binary per target platform in its distribution, the overhead for registry_controlled_domain.cc is roughly 910kB (3 32-bit platforms, 2 64-bit platform).
+Page Speed would like an implementation that reduces binary size and memory footprint but is also startup and runtime efficient. Since Page Speed bundles one binary per target platform in its distribution, the overhead for registry_controlled_domain.cc is roughly 910kB (3 32-bit platforms, 2 64-bit platforms).
 
 In addition, browsers (especially mobile browsers) would benefit from a small, efficient registry lookup implementation.
 
