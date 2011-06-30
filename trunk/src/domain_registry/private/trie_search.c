@@ -58,10 +58,14 @@ const struct TrieNode* FindNodeInRange(
   DCHECK(end != NULL);
   if (start > end) return NULL;
   while (1) {
+    const struct TrieNode* candidate;
+    const char* candidate_str;
+    int result;
+
     DCHECK(start <= end);
-    const struct TrieNode* candidate = MIDDLE(start, end);
-    const char* candidate_str = g_string_table + candidate->string_table_offset;
-    int result = HostnamePartCmp(value, candidate_str);
+    candidate = MIDDLE(start, end);
+    candidate_str = g_string_table + candidate->string_table_offset;
+    result = HostnamePartCmp(value, candidate_str);
     if (result == 0) return candidate;
     if (result > 0) {
       if (end == candidate) return NULL;
@@ -85,10 +89,13 @@ const char* FindLeafNodeInRange(
   DCHECK(end != NULL);
   if (start > end) return NULL;
   while (1) {
+    const REGISTRY_U16* candidate;
+    const char* candidate_str;
+    int result;
     DCHECK(start <= end);
-    const REGISTRY_U16* candidate = MIDDLE(start, end);
-    const char* candidate_str = g_string_table + *candidate;
-    int result = HostnamePartCmp(value, candidate_str);
+    candidate = MIDDLE(start, end);
+    candidate_str = g_string_table + *candidate;
+    result = HostnamePartCmp(value, candidate_str);
     if (result == 0) return candidate_str;
     if (result > 0) {
       if (end == candidate) return NULL;
@@ -105,6 +112,10 @@ const char* FindLeafNodeInRange(
 // starting from the root node.
 const struct TrieNode* FindRegistryNode(const char* component,
                                         const struct TrieNode* parent) {
+  const struct TrieNode* start;
+  const struct TrieNode* end;
+  const struct TrieNode* current;
+
   DCHECK(g_string_table != NULL);
   DCHECK(g_node_table != NULL);
   DCHECK(g_leaf_node_table != NULL);
@@ -113,8 +124,6 @@ const struct TrieNode* FindRegistryNode(const char* component,
   if (IsInvalidComponent(component)) {
     return NULL;
   }
-  const struct TrieNode* start;
-  const struct TrieNode* end;
   if (parent == NULL) {
     // If parent is NULL, start the search at the root node.
     start = g_node_table;
@@ -131,9 +140,7 @@ const struct TrieNode* FindRegistryNode(const char* component,
     start = g_node_table + parent->first_child_offset;
     end = start + (parent->num_children - 1);
   }
-  const struct TrieNode* current = FindNodeInRange(component,
-                                                   start,
-                                                   end);
+  current = FindNodeInRange(component, start, end);
   if (current != NULL) {
     // Found a match. Return it.
     return current;
@@ -168,6 +175,11 @@ const struct TrieNode* FindRegistryNode(const char* component,
 
 const char* FindRegistryLeafNode(const char* component,
                                  const struct TrieNode* parent) {
+  size_t offset;
+  const REGISTRY_U16* leaf_start;
+  const REGISTRY_U16* leaf_end;
+  const char* match;
+
   DCHECK(g_string_table != NULL);
   DCHECK(g_node_table != NULL);
   DCHECK(g_leaf_node_table != NULL);
@@ -185,12 +197,12 @@ const char* FindRegistryLeafNode(const char* component,
     return NULL;
   }
 
-  size_t offset = parent->first_child_offset - g_leaf_node_table_offset;
-  const REGISTRY_U16* leaf_start = g_leaf_node_table + offset;
-  const REGISTRY_U16* leaf_end = leaf_start + (parent->num_children - 1);
-  const char* match = FindLeafNodeInRange(component,
-                                          leaf_start,
-                                          leaf_end);
+  offset = parent->first_child_offset - g_leaf_node_table_offset;
+  leaf_start = g_leaf_node_table + offset;
+  leaf_end = leaf_start + (parent->num_children - 1);
+  match = FindLeafNodeInRange(component,
+                              leaf_start,
+                              leaf_end);
   if (match != NULL) {
     return match;
   }

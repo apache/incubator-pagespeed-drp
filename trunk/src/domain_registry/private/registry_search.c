@@ -41,6 +41,9 @@ static const char* GetNextHostnamePartImpl(const char* start,
                                            const char* end,
                                            char sep,
                                            void** ctx) {
+  const char* last;
+  const char* i;
+  
   if (*ctx == NULL) {
     *ctx = (void*) end;
 
@@ -50,8 +53,7 @@ static const char* GetNextHostnamePartImpl(const char* start,
       *ctx = (void*) (end - 1);
     }
   }
-  const char* last = *ctx;
-  const char* i;
+  last = *ctx;
   if (start > last) return NULL;
   for (i = last - 1; i >= start; --i) {
     if (*i == sep) {
@@ -95,6 +97,8 @@ static const char* GetRegistryForHostname(const char* value,
   // is foo.com, we will first visit component com, then component foo.
   while ((component =
           GetNextHostnamePart(value, value_end, sep, &ctx)) != NULL) {
+    const char* leaf_node;
+
     current = FindRegistryNode(component, current);
     if (current == NULL) {
       break;
@@ -112,7 +116,7 @@ static const char* GetRegistryForHostname(const char* value,
       if (component == NULL) {
         break;
       }
-      const char* leaf_node = FindRegistryLeafNode(component, current);
+      leaf_node = FindRegistryLeafNode(component, current);
       if (leaf_node == NULL) {
         break;
       }
@@ -128,11 +132,15 @@ static size_t GetRegistryLengthImpl(
     const char* value_end,
     const char sep,
     int allow_unknown_registries) {
+  const size_t value_len = value_end - value;
+  const char* registry;
+  size_t match_len;
+
   while (*value == sep && value < value_end) {
     // Skip over leading separators.
     ++value;
   }
-  const char* registry = GetRegistryForHostname(value, value_end, sep);
+  registry = GetRegistryForHostname(value, value_end, sep);
   if (registry == NULL) {
     // Didn't find a match. If unknown registries are allowed, see if
     // the root hostname part is not in the table. If so, consider it to be a
@@ -166,43 +174,49 @@ static size_t GetRegistryLengthImpl(
     DCHECK(registry < value_end);
     return 0;
   }
-  size_t match_len = value_end - registry;
-  if (match_len >= (value_end - value)) {
+  match_len = value_end - registry;
+  if (match_len >= value_len) {
     return 0;
   }
   return match_len;
 }
 
 size_t GetRegistryLength(const char* hostname) {
+  const char* buf_end;
+  size_t registry_length;
+
   // Replace dots between hostname parts with the null byte. This
   // allows us to index directly into the string and refer to each
   // hostname-part as if it were its own null-terminated string.
   char* buf = strdup(hostname);
   ReplaceChar(buf, '.', '\0');
 
-  const char* buf_end = buf + strlen(hostname);
+  buf_end = buf + strlen(hostname);
   DCHECK(*buf_end == 0);
 
   // Normalize the input by converting all characters to lowercase.
   ToLower(buf, buf_end);
-  size_t registry_length = GetRegistryLengthImpl(buf, buf_end, '\0', 0);
+  registry_length = GetRegistryLengthImpl(buf, buf_end, '\0', 0);
   free(buf);
   return registry_length;
 }
 
 size_t GetRegistryLengthAllowUnknownRegistries(const char* hostname) {
+  const char* buf_end;
+  size_t registry_length;
+  
   // Replace dots between hostname parts with the null byte. This
   // allows us to index directly into the string and refer to each
   // hostname-part as if it were its own null-terminated string.
   char* buf = strdup(hostname);
   ReplaceChar(buf, '.', '\0');
 
-  const char* buf_end = buf + strlen(hostname);
+  buf_end = buf + strlen(hostname);
   DCHECK(*buf_end == 0);
 
   // Normalize the input by converting all characters to lowercase.
   ToLower(buf, buf_end);
-  size_t registry_length = GetRegistryLengthImpl(buf, buf_end, '\0', 1);
+  registry_length = GetRegistryLengthImpl(buf, buf_end, '\0', 1);
   free(buf);
   return registry_length;
 }
