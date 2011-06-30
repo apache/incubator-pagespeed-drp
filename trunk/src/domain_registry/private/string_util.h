@@ -43,6 +43,15 @@ static inline int IsExceptionComponent(const char* component) {
   return 0;
 }
 
+static inline int IsInvalidComponent(const char* component) {
+  if (component[0] == 0 ||
+      IsExceptionComponent(component) ||
+      IsWildcardComponent(component)) {
+    return 1;
+  }
+  return 0;
+}
+
 static inline void ReplaceChar(char* value, char old, char newval) {
   while ((value = strchr(value, old)) != NULL) {
     *value = newval;

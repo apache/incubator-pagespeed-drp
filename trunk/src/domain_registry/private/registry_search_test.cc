@@ -130,6 +130,7 @@ TEST_F(RegistrySearchTest, UnknownRegistries) {
   EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("bar"));
   EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries(".bar"));
   EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("..bar"));
+  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("a.foo.com.."));
 }
 
 TEST_F(RegistrySearchTest, MultipleDots) {

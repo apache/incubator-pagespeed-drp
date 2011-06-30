@@ -84,11 +84,7 @@ static const char* GetRegistryForHostname(const char* value,
   // is foo.com, we will first visit component com, then component foo.
   while ((component =
           GetNextHostnamePart(value, value_end, sep, &ctx)) != NULL) {
-    if (component[0] == 0 ||
-        IsExceptionComponent(component) ||
-        IsWildcardComponent(component)) {
-      // Inputs that contain empty components, wildcards, or
-      // exceptions are invalid.
+    if (IsInvalidComponent(component)) {
       return NULL;
     }
     current = FindRegistryNode(component, current);
@@ -137,6 +133,9 @@ static size_t GetRegistryLengthImpl(
       void* ctx = NULL;
       const char* root_hostname_part =
           GetNextHostnamePart(value, value_end, sep, &ctx);
+      if (IsInvalidComponent(root_hostname_part)) {
+        return 0;
+      }
       // See if the root hostname-part is in the table. If it's not in
       // the table, then consider the unknown registry to be a valid
       // registry.
