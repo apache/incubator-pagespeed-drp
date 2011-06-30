@@ -22,6 +22,10 @@
 
 static const char kUpperLowerDistance = 'A' - 'a';
 
+#if _WINDOWS
+#define inline __inline
+#endif
+
 static inline int IsWildcardComponent(const char* component) {
   if (component[0] == '*') {
     // Wildcards should always appear by themselves. It is an error
