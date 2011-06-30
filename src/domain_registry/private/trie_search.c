@@ -110,9 +110,6 @@ const struct TrieNode* FindRegistryNode(const char* component,
   DCHECK(g_leaf_node_table != NULL);
   DCHECK(component != NULL);
 
-  if (component == NULL) {
-    return NULL;
-  }
   if (IsInvalidComponent(component)) {
     return NULL;
   }
@@ -178,9 +175,6 @@ const char* FindRegistryLeafNode(const char* component,
   DCHECK(parent != NULL);
   DCHECK(HasLeafChildren(parent) != 0);
 
-  if (component == NULL) {
-    return NULL;
-  }
   if (parent == NULL) {
     return NULL;
   }

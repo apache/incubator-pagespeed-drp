@@ -37,10 +37,10 @@ static const char* GetDomainRegistryStr(const char* rule_part,
 // string between start and end is "foo\0bar\0com" and sep is the null
 // character, we will return a pointer to "com", then "bar", then
 // "foo".
-static const char* GetNextHostnamePart(const char* start,
-                                       const char* end,
-                                       char sep,
-                                       void** ctx) {
+static const char* GetNextHostnamePartImpl(const char* start,
+                                           const char* end,
+                                           char sep,
+                                           void** ctx) {
   if (*ctx == NULL) {
     *ctx = (void*) end;
 
@@ -70,6 +70,17 @@ static const char* GetNextHostnamePart(const char* start,
   return NULL;
 }
 
+static const char* GetNextHostnamePart(const char* start,
+                                       const char* end,
+                                       char sep,
+                                       void** ctx) {
+  const char* hostname_part = GetNextHostnamePartImpl(start, end, sep, ctx);
+  if (IsInvalidComponent(hostname_part)) {
+    return NULL;
+  }
+  return hostname_part;
+}
+
 // Iterate over all hostname-parts between value and value_end, where
 // the hostname-parts are separated by character sep.
 static const char* GetRegistryForHostname(const char* value,
@@ -84,9 +95,6 @@ static const char* GetRegistryForHostname(const char* value,
   // is foo.com, we will first visit component com, then component foo.
   while ((component =
           GetNextHostnamePart(value, value_end, sep, &ctx)) != NULL) {
-    if (IsInvalidComponent(component)) {
-      return NULL;
-    }
     current = FindRegistryNode(component, current);
     if (current == NULL) {
       break;
@@ -133,13 +141,11 @@ static size_t GetRegistryLengthImpl(
       void* ctx = NULL;
       const char* root_hostname_part =
           GetNextHostnamePart(value, value_end, sep, &ctx);
-      if (IsInvalidComponent(root_hostname_part)) {
-        return 0;
-      }
       // See if the root hostname-part is in the table. If it's not in
       // the table, then consider the unknown registry to be a valid
       // registry.
-      if (FindRegistryNode(root_hostname_part, NULL) == NULL) {
+      if (root_hostname_part != NULL &&
+          FindRegistryNode(root_hostname_part, NULL) == NULL) {
         registry = root_hostname_part;
       }
     }

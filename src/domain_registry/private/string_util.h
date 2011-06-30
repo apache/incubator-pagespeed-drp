@@ -44,7 +44,8 @@ static inline int IsExceptionComponent(const char* component) {
 }
 
 static inline int IsInvalidComponent(const char* component) {
-  if (component[0] == 0 ||
+  if (component == NULL ||
+      component[0] == 0 ||
       IsExceptionComponent(component) ||
       IsWildcardComponent(component)) {
     return 1;
