@@ -72,9 +72,9 @@ static const char* GetNextHostnamePart(const char* start,
 
 // Iterate over all hostname-parts between value and value_end, where
 // the hostname-parts are separated by character sep.
-static const char* IterateAllHostnameParts(const char* value,
-                                           const char* value_end,
-                                           const char sep) {
+static const char* GetRegistryForHostname(const char* value,
+                                          const char* value_end,
+                                          const char sep) {
   void *ctx = NULL;
   const struct TrieNode* current = NULL;
   const char* component = NULL;
@@ -120,30 +120,48 @@ static const char* IterateAllHostnameParts(const char* value,
 }
 
 static size_t GetRegistryLengthImpl(
-    const char* value, const char* value_end, const char sep) {
+    const char* value,
+    const char* value_end,
+    const char sep,
+    int allow_unknown_registries) {
   while (*value == sep && value < value_end) {
     // Skip over leading separators.
     ++value;
   }
-  const char* last_valid = IterateAllHostnameParts(value, value_end, sep);
-  if (last_valid == NULL) {
-    // Didn't find a match.
-    return 0;
+  const char* registry = GetRegistryForHostname(value, value_end, sep);
+  if (registry == NULL) {
+    // Didn't find a match. If unknown registries are allowed, see if
+    // the root hostname part is not in the table. If so, consider it to be a
+    // valid registry, and return its length.
+    if (allow_unknown_registries != 0) {
+      void* ctx = NULL;
+      const char* root_hostname_part =
+          GetNextHostnamePart(value, value_end, sep, &ctx);
+      // See if the root hostname-part is in the table. If it's not in
+      // the table, then consider the unknown registry to be a valid
+      // registry.
+      if (FindRegistryNode(root_hostname_part, NULL) == NULL) {
+        registry = root_hostname_part;
+      }
+    }
+    if (registry == NULL) {
+      return 0;
+    }
   }
-  if (last_valid == value) {
+  if (registry == value) {
     // Special case: if the value is an exact match, it is itself a
     // top-level registry. However, in this case, we want to return 0,
     // to indicate that it's not allowed to set cookies, etc on the
     // top-level registry.
     return 0;
   }
-  if (last_valid < value || last_valid >= value_end) {
+  if (registry < value || registry >= value_end) {
     // Error cases.
-    DCHECK(last_valid >= value);
-    DCHECK(last_valid < value_end);
+    DCHECK(registry >= value);
+    DCHECK(registry < value_end);
     return 0;
   }
-  size_t match_len = value_end - last_valid;
+  size_t match_len = value_end - registry;
   if (match_len >= (value_end - value)) {
     return 0;
   }
@@ -162,7 +180,24 @@ size_t GetRegistryLength(const char* hostname) {
 
   // Normalize the input by converting all characters to lowercase.
   ToLower(buf, buf_end);
-  size_t registry_length = GetRegistryLengthImpl(buf, buf_end, '\0');
+  size_t registry_length = GetRegistryLengthImpl(buf, buf_end, '\0', 0);
+  free(buf);
+  return registry_length;
+}
+
+size_t GetRegistryLengthAllowUnknownRegistries(const char* hostname) {
+  // Replace dots between hostname parts with the null byte. This
+  // allows us to index directly into the string and refer to each
+  // hostname-part as if it were its own null-terminated string.
+  char* buf = strdup(hostname);
+  ReplaceChar(buf, '.', '\0');
+
+  const char* buf_end = buf + strlen(hostname);
+  DCHECK(*buf_end == 0);
+
+  // Normalize the input by converting all characters to lowercase.
+  ToLower(buf, buf_end);
+  size_t registry_length = GetRegistryLengthImpl(buf, buf_end, '\0', 1);
   free(buf);
   return registry_length;
 }
