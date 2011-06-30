@@ -48,6 +48,20 @@ void InitializeDomainRegistry(void);
 //   foo.bar              -> 0                 (not a valid top-level registry)
 size_t GetRegistryLength(const char* hostname);
 
+// Like GetRegistryLength, but allows unknown registries as well. If
+// the hostname is part of a known registry, the return value will be
+// identical to that of GetRegistryLength. If the hostname is not part
+// of a known registry (e.g. foo.bar) then the return value will
+// assume that the rootmost hostname-part is the registry.
+//
+// Examples:
+//   foo.bar              -> 3                 (bar)
+//   bar                  -> 0                 (host is a registry)
+//   www.google.com       -> 3                 (com)
+//   com                  -> 0                 (host is a registry)
+//   co.uk                -> 0                 (host is a registry)
+size_t GetRegistryLengthAllowUnknownRegistries(const char* hostname);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif

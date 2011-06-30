@@ -70,7 +70,6 @@ TEST_F(RegistrySearchTest, BazDotFoo) {
   EXPECT_EQ(3, GetRegistryLength("b.baz.foo"));
 }
 
-
 TEST_F(RegistrySearchTest, BarDotFoo) {
   EXPECT_EQ(0, GetRegistryLength("bar.foo"));
   EXPECT_EQ(0, GetRegistryLength(".bar.foo"));
@@ -106,6 +105,8 @@ TEST_F(RegistrySearchTest, StarDotFoo) {
 
   // foo.*.foo:
   EXPECT_EQ(0, GetRegistryLength("foo.a.foo"));
+  EXPECT_EQ(0, GetRegistryLength(".foo.a.foo"));
+  EXPECT_EQ(0, GetRegistryLength("..foo.a.foo"));
   EXPECT_EQ(9, GetRegistryLength("www.foo.a.foo"));
   EXPECT_EQ(9, GetRegistryLength("www.foo.b.foo"));
   EXPECT_EQ(11, GetRegistryLength("www.foo.zzz.foo"));
@@ -120,6 +121,17 @@ TEST_F(RegistrySearchTest, StarDotFoo) {
   EXPECT_EQ(11, GetRegistryLength("www.zzz.zzz.foo"));
 }
 
+TEST_F(RegistrySearchTest, UnknownRegistries) {
+  EXPECT_EQ(0, GetRegistryLength("foo.bar"));
+  EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("foo.bar"));
+  EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries(".foo.bar"));
+  EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("..foo.bar"));
+  EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("foo..bar"));
+  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("bar"));
+  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries(".bar"));
+  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("..bar"));
+}
+
 TEST_F(RegistrySearchTest, MultipleDots) {
   // First, we know that *.foo.com should match.
   EXPECT_EQ(7, GetRegistryLength("a.foo.com"));
@@ -127,6 +139,8 @@ TEST_F(RegistrySearchTest, MultipleDots) {
   // A single trailing dot indicates a fully qualified domain name,
   // which is a valid input.
   EXPECT_EQ(8, GetRegistryLength("a.foo.com."));
+  EXPECT_EQ(8, GetRegistryLength(".a.foo.com."));
+  EXPECT_EQ(8, GetRegistryLength("..a.foo.com."));
 
   // Multiple trailing dots are invalid.
   EXPECT_EQ(0, GetRegistryLength("a.foo.com.."));
@@ -135,9 +149,10 @@ TEST_F(RegistrySearchTest, MultipleDots) {
   // registry, it should no longer match.
   EXPECT_EQ(0, GetRegistryLength("a.foo..com"));
 
-  // If there are multiple dots after the registry, consider it a
-  // match.
+  // If there are multiple dots before the registry, it's a match.
   EXPECT_EQ(7, GetRegistryLength("a..foo.com"));
+  EXPECT_EQ(7, GetRegistryLength("a...foo.com"));
+  EXPECT_EQ(7, GetRegistryLength(".a...foo.com"));
 }
 
 }  // namespace

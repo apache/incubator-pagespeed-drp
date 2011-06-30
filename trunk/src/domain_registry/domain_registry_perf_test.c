@@ -11,6 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// Performance test, which can be used for A/B testing to measure the
+// performance impact of a change. Run the test before making the change,
+// then after making the change. Look at the difference in runtimes
+// before and after to determine the performance impact.
 
 #include <stdio.h>
 
