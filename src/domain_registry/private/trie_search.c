@@ -113,12 +113,7 @@ const struct TrieNode* FindRegistryNode(const char* component,
   if (component == NULL) {
     return NULL;
   }
-  if (*component == 0) {
-    // Empty inputs are invalid.
-    return NULL;
-  }
-  if (IsWildcardComponent(component) || IsExceptionComponent(component)) {
-    // Inputs that contain wildcards or exceptions are invalid.
+  if (IsInvalidComponent(component)) {
     return NULL;
   }
   const struct TrieNode* start;
@@ -186,18 +181,13 @@ const char* FindRegistryLeafNode(const char* component,
   if (component == NULL) {
     return NULL;
   }
-  if (*component == 0) {
-    // Empty inputs are invalid.
-    return NULL;
-  }
   if (parent == NULL) {
     return NULL;
   }
   if (HasLeafChildren(parent) == 0) {
     return NULL;
   }
-  if (IsWildcardComponent(component) || IsExceptionComponent(component)) {
-    // Inputs that contain wildcards or exceptions are invalid.
+  if (IsInvalidComponent(component)) {
     return NULL;
   }
 
