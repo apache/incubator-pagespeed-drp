@@ -121,23 +121,9 @@ class TrieNode(object):
     """Return a boolean indicating whether this node has children."""
     return len(self._children) > 0
 
-  @staticmethod
-  def SortByNameWildcardAtEnd(a, b):
-    """Sort keys by their name, with wildcards always sorting to the end."""
-    result = cmp(a, b)
-    if result == 0:
-      return result
-    if a == "*":
-      return 1
-    if b == "*":
-      return -1
-    return result
-
   def GetChildren(self):
     """Return a list of all children, lexicographically sorted by name."""
-    return sorted(self._children.values(),
-                  cmp=TrieNode.SortByNameWildcardAtEnd,
-                  key=lambda n: n.GetName())
+    return sorted(self._children.values(), key=lambda n: n.GetName())
 
   def IsRoot(self):
     """Return whether this node is a root (i.e. it has no parent)."""

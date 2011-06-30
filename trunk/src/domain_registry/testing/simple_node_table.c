@@ -28,17 +28,17 @@ static const struct TrieNode kSimpleNodeTable[] = {
   // 2. first_child_offset. Note that leaf table offsets start at 5.
   // 3. num_children
   // 4. is_terminal
-  { 0,  6, 1, 0 },  // com       (1 leaf child at offset 1)
+  { 0,  7, 1, 0 },  // com       (1 leaf child at offset 1)
   { 4,  2, 3, 0 },  // foo       (3 non-leaf children at offset 2)
   { 10, 0, 0, 1 },  // !baz.foo  (0 children)
-  { 15, 6, 2, 1 },  // bar.foo   (2 leaf children at offset 1)
   { 8,  5, 3, 1 },  // *.foo     (3 leaf children at offset 0)
+  { 15, 6, 2, 1 },  // bar.foo   (2 leaf children at offset 1)
 };
 
 static const REGISTRY_U16 kSimpleLeafNodeTable[] = {
   10,  // !baz
-  4,   // foo
   8,   // *
+  4,   // foo
 };
 
 static const size_t kSimpleNumRootChildren = 2;

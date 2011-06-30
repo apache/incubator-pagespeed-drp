@@ -59,11 +59,6 @@ static inline void ToLower(char* buf, const char* end) {
   }
 }
 
-// Modified strcmp that considers the wildcard character '*' to come
-// after all other characters. We put '*' at the end to improve
-// performance when checking for the wildcard character (this allows us
-// to check only the last node as opposed to performing a binary search
-// through all siblings).
 static inline int HostnamePartCmp(const char *a, const char *b) {
   // Optimization: do not invoke strcmp() unless the first characters
   // in each string match. Since we are performing a binary search, we
@@ -71,12 +66,6 @@ static inline int HostnamePartCmp(const char *a, const char *b) {
   // and thus not invoke strcmp. This reduces overall runtime by 5-10%
   // on a Linux laptop running a -O2 optimized build.
   int ret = *(unsigned char *)a - *(unsigned char *)b;
-  if (ret != 0) {
-    // If the strings differ, special case the wildcard character to
-    // make sure it sorts at the end.
-    if (IsWildcardComponent(a)) return 1;
-    if (IsWildcardComponent(b)) return -1;
-  }
   // NOTE: we could invoke strcmp on a+1,b+1 if we are
   // certain that neither a nor b are the empty string. For now we
   // take the more conservative approach.
