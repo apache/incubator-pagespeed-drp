@@ -69,17 +69,8 @@ TEST(StringUtilTest, HostnamePartCmp) {
   ASSERT_GT(0, HostnamePartCmp("zza", "zzb"));
   ASSERT_LT(0, HostnamePartCmp("zzb", "zza"));
   ASSERT_EQ(0, HostnamePartCmp("aaa", "aaa"));
-  ASSERT_GT(0, HostnamePartCmp("zzz", "*"));
-  ASSERT_LT(0, HostnamePartCmp("*", "zzz"));
-
-  // Though we don't depend on this behavior, we document here that
-  // the special wildcard sort is only implemented for the first
-  // character. For comparisons beyond the first character, the
-  // wildcard sorts in its normal strcmp() order (before 'a'). Since
-  // the suffix list only supports wildcards for a whole hostname part
-  // (e.g. "foo.*.com" is supported, but "foo.*bar.com" is not) this
-  // is sufficient.
-  ASSERT_GT(0, HostnamePartCmp("a*", "aa"));
+  ASSERT_GT(0, HostnamePartCmp("*", "zzz"));
+  ASSERT_LT(0, HostnamePartCmp("zzz", "*"));
 }
 
 }  // namespace

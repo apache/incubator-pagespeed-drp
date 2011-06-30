@@ -76,15 +76,15 @@ TEST_F(TrieSearchTest, FindRegistryNode) {
   EXPECT_EQ(&kSimpleNodeTable[2],
             FindRegistryNode("baz", &kSimpleNodeTable[1]));
   EXPECT_EQ(&kSimpleNodeTable[3],
-            FindRegistryNode("bar", &kSimpleNodeTable[1]));
-  EXPECT_EQ(&kSimpleNodeTable[3],
-            FindRegistryNode("bar", &kSimpleNodeTable[1]));
-  EXPECT_EQ(&kSimpleNodeTable[4],
             FindRegistryNode("zzz", &kSimpleNodeTable[1]));
-  EXPECT_EQ(&kSimpleNodeTable[4],
+  EXPECT_EQ(&kSimpleNodeTable[3],
             FindRegistryNode("wildcard", &kSimpleNodeTable[1]));
-  EXPECT_EQ(&kSimpleNodeTable[4],
+  EXPECT_EQ(&kSimpleNodeTable[3],
             FindRegistryNode("wc", &kSimpleNodeTable[1]));
+  EXPECT_EQ(&kSimpleNodeTable[4],
+            FindRegistryNode("bar", &kSimpleNodeTable[1]));
+  EXPECT_EQ(&kSimpleNodeTable[4],
+            FindRegistryNode("bar", &kSimpleNodeTable[1]));
 
   // Tests to verify that searches for wildcard and exceptions never match.
   EXPECT_EQ(NULL, FindRegistryNode("!baz", &kSimpleNodeTable[1]));
@@ -101,21 +101,21 @@ TEST_F(TrieSearchTest, FindRegistryLeafNode) {
   EXPECT_EQ(&kSimpleStringTable[4],
             FindRegistryLeafNode("foo", &kSimpleNodeTable[0]));
 
+  EXPECT_EQ(&kSimpleStringTable[10],
+            FindRegistryLeafNode("baz", &kSimpleNodeTable[3]));
   EXPECT_EQ(&kSimpleStringTable[4],
             FindRegistryLeafNode("foo", &kSimpleNodeTable[3]));
   EXPECT_EQ(&kSimpleStringTable[8],
             FindRegistryLeafNode("zzz", &kSimpleNodeTable[3]));
+  EXPECT_EQ(&kSimpleStringTable[8],
+            FindRegistryLeafNode("wildcard", &kSimpleNodeTable[3]));
+  EXPECT_EQ(&kSimpleStringTable[8],
+            FindRegistryLeafNode("wc", &kSimpleNodeTable[3]));
 
-  EXPECT_EQ(&kSimpleStringTable[10],
-            FindRegistryLeafNode("baz", &kSimpleNodeTable[4]));
   EXPECT_EQ(&kSimpleStringTable[4],
             FindRegistryLeafNode("foo", &kSimpleNodeTable[4]));
   EXPECT_EQ(&kSimpleStringTable[8],
             FindRegistryLeafNode("zzz", &kSimpleNodeTable[4]));
-  EXPECT_EQ(&kSimpleStringTable[8],
-            FindRegistryLeafNode("wildcard", &kSimpleNodeTable[4]));
-  EXPECT_EQ(&kSimpleStringTable[8],
-            FindRegistryLeafNode("wc", &kSimpleNodeTable[4]));
 
   // Tests to verify that searches for wildcard and exceptions never
   // match.
@@ -165,9 +165,9 @@ TEST_F(TrieSearchFindNodeTest, FindNodeInRangeThreeNodes) {
   EXPECT_EQ(&kSimpleNodeTable[2],
             FindNodeInRange("!baz", &kSimpleNodeTable[2], &kSimpleNodeTable[4]));
   EXPECT_EQ(&kSimpleNodeTable[3],
-            FindNodeInRange("bar", &kSimpleNodeTable[2], &kSimpleNodeTable[4]));
-  EXPECT_EQ(&kSimpleNodeTable[4],
             FindNodeInRange("*", &kSimpleNodeTable[2], &kSimpleNodeTable[4]));
+  EXPECT_EQ(&kSimpleNodeTable[4],
+            FindNodeInRange("bar", &kSimpleNodeTable[2], &kSimpleNodeTable[4]));
 
   // exception and wildcard matches are not performed at this level,
   // so we expect them to fail here.
@@ -205,12 +205,12 @@ TEST_F(TrieSearchFindNodeTest, FindLeafNodeInRangeTwoNodes) {
             FindLeafNodeInRange("!baz",
                                 &kSimpleLeafNodeTable[0],
                                 &kSimpleLeafNodeTable[1]));
-  EXPECT_EQ(&kSimpleStringTable[4],
-            FindLeafNodeInRange("foo",
+  EXPECT_EQ(&kSimpleStringTable[8],
+            FindLeafNodeInRange("*",
                                 &kSimpleLeafNodeTable[0],
                                 &kSimpleLeafNodeTable[1]));
-  EXPECT_EQ(&kSimpleStringTable[8],
-           FindLeafNodeInRange("*",
+  EXPECT_EQ(&kSimpleStringTable[4],
+           FindLeafNodeInRange("foo",
                                 &kSimpleLeafNodeTable[1],
                                 &kSimpleLeafNodeTable[2]));
 }

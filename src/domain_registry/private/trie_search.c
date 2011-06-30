@@ -153,14 +153,8 @@ const struct TrieNode* FindRegistryNode(const char* component,
   // in a hostname part. (Note: the list uses Unicode, not Punycode
   // forms, and is encoded using UTF-8.) Wildcards may only be used to
   // wildcard an entire level. That is, they must be surrounded by
-  // dots (or implicit dots, at the beginning of a line)." Since
-  // wildcard always sorts at the end of the set of candidates in
-  // HostnamePartCmp, we can simply check the last candidate
-  // (end) to see if it's the wildcard.
-  const char* candidate_str = g_string_table + end->string_table_offset;
-  if (IsWildcardComponent(candidate_str)) {
-    current = end;
-  }
+  // dots (or implicit dots, at the beginning of a line)."
+  current = FindNodeInRange("*", start, end);
   if (current != NULL) {
     // If there was a wildcard match, see if there is a wildcard
     // exception match, and prefer it if so. From
@@ -223,14 +217,8 @@ const char* FindRegistryLeafNode(const char* component,
   // in a hostname part. (Note: the list uses Unicode, not Punycode
   // forms, and is encoded using UTF-8.) Wildcards may only be used to
   // wildcard an entire level. That is, they must be surrounded by
-  // dots (or implicit dots, at the beginning of a line)." Since
-  // wildcard always sorts at the end of the set of candidates in our
-  // variation of strcmp, we can simply check the last candidate
-  // (leaf_end) to see if it's the wildcard.
-  const char* candidate_str = g_string_table + *leaf_end;
-  if (IsWildcardComponent(candidate_str)) {
-    match = candidate_str;
-  }
+  // dots (or implicit dots, at the beginning of a line)."
+  match = FindLeafNodeInRange("*", leaf_start, leaf_end);
   if (match != NULL) {
     // There was a wildcard match, so see if there is a wildcard
     // exception match, and prefer it if so. From
