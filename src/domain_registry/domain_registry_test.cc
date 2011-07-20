@@ -18,7 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Include the generated file that contains the actual registry tables.
-#include "registry_tables_genfiles/test_registry_tables.c"
+#include "registry_tables_genfiles/test_registry_tables.h"
 
 namespace {
 
