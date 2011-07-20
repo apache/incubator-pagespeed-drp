@@ -23,7 +23,7 @@
 #include "domain_registry/testing/test_entry.h"
 
 // Include the generated file that contains the actual registry tables.
-#include "registry_tables_genfiles/test_registry_tables.c"
+#include "registry_tables_genfiles/test_registry_tables.h"
 
 static const size_t kTestTableLen = sizeof(kTestTable) / sizeof(kTestTable[0]);
 static const size_t kNumIters = 10000;

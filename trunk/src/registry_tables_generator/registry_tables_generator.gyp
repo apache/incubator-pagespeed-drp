@@ -18,8 +18,8 @@
     'out_dir': '<(SHARED_INTERMEDIATE_DIR)/registry_tables_generator_out',
     'executable': 'registry_tables_generator.py',
     'in_dat_file': '../third_party/effective_tld_names/effective_tld_names.dat',
-    'out_registry_file': '<(out_dir)/registry_tables_genfiles/registry_tables.c',
-    'out_registry_test_file': '<(out_dir)/registry_tables_genfiles/test_registry_tables.c',
+    'out_registry_file': '<(out_dir)/registry_tables_genfiles/registry_tables.h',
+    'out_registry_test_file': '<(out_dir)/registry_tables_genfiles/test_registry_tables.h',
     'src_py_files': [
       'registry_tables_generator.py',
       'node_table_builder.py',

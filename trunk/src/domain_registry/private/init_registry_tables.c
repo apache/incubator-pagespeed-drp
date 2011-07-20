@@ -21,7 +21,7 @@
 #include "domain_registry/private/trie_search.h"
 
 // Include the generated file that contains the actual registry tables.
-#include "registry_tables_genfiles/registry_tables.c"
+#include "registry_tables_genfiles/registry_tables.h"
 
 void InitializeDomainRegistry(void) {
   SetRegistryTables(kStringTable,
