@@ -24,6 +24,23 @@ extern "C" {
 
 namespace {
 
+// Hostname of length 255, the longest allowed.
+const char* kLongestAllowedHostname =
+    "123456789012345678901234567890123456789012345678901234567890"
+    "123456789012345678901234567890123456789012345678901234567890"
+    "123456789012345678901234567890123456789012345678901234567890"
+    "123456789012345678901234567890123456789012345678901234567890"
+    "1234567.foo.com";
+
+// Hostname of length 256, which is too long and should not be
+// processed by the library.
+const char* kTooLongHostname =
+    "123456789012345678901234567890123456789012345678901234567890"
+    "123456789012345678901234567890123456789012345678901234567890"
+    "123456789012345678901234567890123456789012345678901234567890"
+    "123456789012345678901234567890123456789012345678901234567890"
+    "12345678.foo.com";
+
 class RegistrySearchTest : public ::testing::Test {
  protected:
   static void SetUpTestCase() {
@@ -154,6 +171,18 @@ TEST_F(RegistrySearchTest, MultipleDots) {
   EXPECT_EQ(7, GetRegistryLength("a..foo.com"));
   EXPECT_EQ(7, GetRegistryLength("a...foo.com"));
   EXPECT_EQ(7, GetRegistryLength(".a...foo.com"));
+}
+
+TEST_F(RegistrySearchTest, HostnameMaxLength) {
+  ASSERT_EQ(255, strlen(kLongestAllowedHostname));
+  ASSERT_EQ(256, strlen(kTooLongHostname));
+
+  EXPECT_EQ(7, GetRegistryLength(kLongestAllowedHostname));
+  EXPECT_EQ(7,
+            GetRegistryLengthAllowUnknownRegistries(kLongestAllowedHostname));
+
+  EXPECT_EQ(0, GetRegistryLength(kTooLongHostname));
+  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries(kTooLongHostname));
 }
 
 }  // namespace

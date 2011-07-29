@@ -20,6 +20,29 @@
 #include "domain_registry/private/string_util.h"
 #include "domain_registry/private/trie_search.h"
 
+// RFCs 1035 and 1123 specify a max hostname length of 255 bytes.
+static const size_t kMaxHostnameLen = 255;
+
+static int IsValidHostname(const char* hostname) {
+  // http://www.ietf.org/rfc/rfc1035.txt (DNS) and
+  // http://tools.ietf.org/html/rfc1123 (Internet host requirements)
+  // specify a maximum hostname length of 255 characters. To make sure
+  // string comparisons, etc are bounded elsewhere in the codebase, we
+  // enforce the 255 character limit here. There are various other
+  // hostname constraints specified in the RFCs (63 bytes per
+  // hostname-part, etc) but we do not enforce those here since doing
+  // so would not change correctness of the overall implementation,
+  // and it's possible that hostnames used in other contexts
+  // (e.g. outside of DNS) would not be subject to the 63-byte
+  // hostname-part limit. So we let the DNS layer enforce its policy,
+  // and enforce only the maximum hostname length here.
+  if (strnlen(hostname, kMaxHostnameLen + 1) > kMaxHostnameLen) {
+    return 0;
+  }
+
+  return 1;
+}
+
 // Get a pointer to the beginning of the valid registry. If rule_part
 // is an exception component, this will seek past the
 // rule_part. Otherwise this will simply return the component itself.
@@ -43,7 +66,7 @@ static const char* GetNextHostnamePartImpl(const char* start,
                                            void** ctx) {
   const char* last;
   const char* i;
-  
+
   if (*ctx == NULL) {
     *ctx = (void*) end;
 
@@ -185,6 +208,10 @@ size_t GetRegistryLength(const char* hostname) {
   const char* buf_end;
   size_t registry_length;
 
+  if (IsValidHostname(hostname) == 0) {
+    return 0;
+  }
+
   // Replace dots between hostname parts with the null byte. This
   // allows us to index directly into the string and refer to each
   // hostname-part as if it were its own null-terminated string.
@@ -204,7 +231,11 @@ size_t GetRegistryLength(const char* hostname) {
 size_t GetRegistryLengthAllowUnknownRegistries(const char* hostname) {
   const char* buf_end;
   size_t registry_length;
-  
+
+  if (IsValidHostname(hostname) == 0) {
+    return 0;
+  }
+
   // Replace dots between hostname parts with the null byte. This
   // allows us to index directly into the string and refer to each
   // hostname-part as if it were its own null-terminated string.
