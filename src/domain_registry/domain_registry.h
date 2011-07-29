@@ -31,7 +31,10 @@ void InitializeDomainRegistry(void);
 // host (e.g. a file: URL). Returns 0 if the hostname has multiple
 // trailing dots, is an IP address, has no subcomponents, or is itself
 // a recognized registry identifier. If no matching rule is found in
-// the effective-TLD data, returns 0.
+// the effective-TLD data, returns 0. Internationalized domain names
+// (IDNs) must be converted to punycode before being processed.
+// Non-ASCII hostnames or hostnames longer than 127 bytes will
+// return 0.
 //
 // Examples:
 //   www.google.com       -> 3                 (com)
@@ -46,6 +49,8 @@ void InitializeDomainRegistry(void);
 //   bar                  -> 0                 (no subcomponents)
 //   co.uk                -> 0                 (host is a registry)
 //   foo.bar              -> 0                 (not a valid top-level registry)
+//   foo.臺灣               -> 0                 (not converted to punycode)
+//   foo.xn--nnx388a      -> 11                (punycode representation of 臺灣)
 size_t GetRegistryLength(const char* hostname);
 
 // Like GetRegistryLength, but allows unknown registries as well. If

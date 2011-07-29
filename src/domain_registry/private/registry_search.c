@@ -23,6 +23,17 @@
 // RFCs 1035 and 1123 specify a max hostname length of 255 bytes.
 static const size_t kMaxHostnameLen = 255;
 
+static int IsStringASCII(const char* s) {
+  const char* it = s;
+  for (; *it != 0; ++it) {
+    unsigned const char unsigned_char = *it;
+    if (unsigned_char > 0x7f) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
 static int IsValidHostname(const char* hostname) {
   // http://www.ietf.org/rfc/rfc1035.txt (DNS) and
   // http://tools.ietf.org/html/rfc1123 (Internet host requirements)
@@ -37,6 +48,13 @@ static int IsValidHostname(const char* hostname) {
   // hostname-part limit. So we let the DNS layer enforce its policy,
   // and enforce only the maximum hostname length here.
   if (strnlen(hostname, kMaxHostnameLen + 1) > kMaxHostnameLen) {
+    return 0;
+  }
+
+  // All hostnames must contain only ASCII characters. If a hostname
+  // is passed in that contains non-ASCII (e.g. an IDN that hasn't been
+  // converted to ASCII via punycode) we want to reject it outright.
+  if (IsStringASCII(hostname) == 0) {
     return 0;
   }
 

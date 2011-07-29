@@ -65,12 +65,16 @@ TEST_F(DomainRegistryTest, Examples) {
   EXPECT_EQ(0, GetRegistryLength("co.uk"));
   EXPECT_EQ(0, GetRegistryLength("foo.bar"));
   EXPECT_EQ(0, GetRegistryLength("bar"));
+  EXPECT_EQ(0, GetRegistryLength("foo.臺灣"));
+  EXPECT_EQ(11, GetRegistryLength("foo.xn--nnx388a"));
 
   EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("foo.bar"));
   EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("bar"));
   EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("www.google.com"));
   EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("com"));
   EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("co.uk"));
+  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("foo.臺灣"));
+  EXPECT_EQ(11, GetRegistryLengthAllowUnknownRegistries("foo.xn--nnx388a"));
 }
 
 }  // namespace
