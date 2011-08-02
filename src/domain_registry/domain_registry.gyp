@@ -81,6 +81,7 @@
       'type': 'executable',
       'dependencies': [
         '../registry_tables_generator/registry_tables_generator.gyp:generate_registry_tables',
+        'assert_lib',
         'domain_registry_lib',
         'init_registry_tables_lib',
         '<(DEPTH)/testing/gtest.gyp:gtest',

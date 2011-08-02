@@ -173,7 +173,6 @@ static size_t GetRegistryLengthImpl(
     const char* value_end,
     const char sep,
     int allow_unknown_registries) {
-  const size_t value_len = value_end - value;
   const char* registry;
   size_t match_len;
 
@@ -202,13 +201,6 @@ static size_t GetRegistryLengthImpl(
       return 0;
     }
   }
-  if (registry == value) {
-    // Special case: if the value is an exact match, it is itself a
-    // top-level registry. However, in this case, we want to return 0,
-    // to indicate that it's not allowed to set cookies, etc on the
-    // top-level registry.
-    return 0;
-  }
   if (registry < value || registry >= value_end) {
     // Error cases.
     DCHECK(registry >= value);
@@ -216,9 +208,6 @@ static size_t GetRegistryLengthImpl(
     return 0;
   }
   match_len = value_end - registry;
-  if (match_len >= value_len) {
-    return 0;
-  }
   return match_len;
 }
 
@@ -240,7 +229,7 @@ size_t GetRegistryLength(const char* hostname) {
   DCHECK(*buf_end == 0);
 
   // Normalize the input by converting all characters to lowercase.
-  ToLower(buf, buf_end);
+  ToLowerASCII(buf, buf_end);
   registry_length = GetRegistryLengthImpl(buf, buf_end, '\0', 0);
   free(buf);
   return registry_length;
@@ -264,7 +253,7 @@ size_t GetRegistryLengthAllowUnknownRegistries(const char* hostname) {
   DCHECK(*buf_end == 0);
 
   // Normalize the input by converting all characters to lowercase.
-  ToLower(buf, buf_end);
+  ToLowerASCII(buf, buf_end);
   registry_length = GetRegistryLengthImpl(buf, buf_end, '\0', 1);
   free(buf);
   return registry_length;

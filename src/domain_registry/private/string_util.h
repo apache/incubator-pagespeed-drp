@@ -28,9 +28,6 @@ static const char kUpperLowerDistance = 'A' - 'a';
 
 static inline int IsWildcardComponent(const char* component) {
   if (component[0] == '*') {
-    // Wildcards should always appear by themselves. It is an error
-    // for the wildcard character to appear adjacent to a non-NULL byte.
-    DCHECK(component[1] == 0);
     return 1;
   }
   return 0;
@@ -38,10 +35,6 @@ static inline int IsWildcardComponent(const char* component) {
 
 static inline int IsExceptionComponent(const char* component) {
   if (component[0] == '!') {
-    // Exceptions should always appear with a string immediately
-    // after. It is an error for the exception character to appear by
-    // itself.
-    DCHECK(component[1] != 0);
     return 1;
   }
   return 0;
@@ -64,7 +57,7 @@ static inline void ReplaceChar(char* value, char old, char newval) {
   }
 }
 
-static inline void ToLower(char* buf, const char* end) {
+static inline void ToLowerASCII(char* buf, const char* end) {
   for (; buf < end; ++buf) {
     char c = *buf;
     if (c >= 'A' && c <= 'Z') {

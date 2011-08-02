@@ -29,24 +29,14 @@ TEST(StringUtilTest, IsWildcardComponent) {
   ASSERT_TRUE(IsWildcardComponent("*"));
   ASSERT_FALSE(IsWildcardComponent(""));
   ASSERT_FALSE(IsWildcardComponent("com"));
-#ifdef NDEBUG
   ASSERT_TRUE(IsWildcardComponent("*foo"));
-#else
-  ASSERT_DEATH(IsWildcardComponent("*foo"),
-               "CHECK failed: component\\[1\\] == 0");
-#endif
 }
 
 TEST(StringUtilTest, IsExceptionComponent) {
   ASSERT_TRUE(IsExceptionComponent("!foo"));
   ASSERT_FALSE(IsExceptionComponent(""));
   ASSERT_FALSE(IsExceptionComponent("foo"));
-#ifdef NDEBUG
   ASSERT_TRUE(IsExceptionComponent("!"));
-#else
-  ASSERT_DEATH(IsExceptionComponent("!"),
-               "CHECK failed: component\\[1\\] != 0");
-#endif
 }
 
 TEST(StringUtilTest, ReplaceChar) {
@@ -58,9 +48,9 @@ TEST(StringUtilTest, ReplaceChar) {
   free(hostname);
 }
 
-TEST(StringUtilTest, ToLower) {
+TEST(StringUtilTest, ToLowerASCII) {
   char* hostname = strdup(kHostname);
-  ToLower(hostname, hostname + kHostnameLen);
+  ToLowerASCII(hostname, hostname + kHostnameLen);
   ASSERT_STREQ("foo.bar.com", hostname);
   free(hostname);
 }
