@@ -68,7 +68,7 @@ TEST_F(RegistrySearchTest, FooDotCom) {
   EXPECT_EQ(0, GetRegistryLength("com"));
   EXPECT_EQ(0, GetRegistryLength("bar.com"));
   EXPECT_EQ(0, GetRegistryLength("www.bar.com"));
-  EXPECT_EQ(0, GetRegistryLength("foo.com"));
+  EXPECT_EQ(7, GetRegistryLength("foo.com"));
   EXPECT_EQ(7, GetRegistryLength("a.foo.com"));
   EXPECT_EQ(7, GetRegistryLength("b.foo.com"));
   EXPECT_EQ(7, GetRegistryLength("zzz.foo.com"));
@@ -78,7 +78,7 @@ TEST_F(RegistrySearchTest, FooDotCom) {
 TEST_F(RegistrySearchTest, DotFoo) {
   EXPECT_EQ(0, GetRegistryLength("foo"));
   EXPECT_EQ(0, GetRegistryLength(".foo"));
-  EXPECT_EQ(0, GetRegistryLength("zzz.foo"));
+  EXPECT_EQ(7, GetRegistryLength("zzz.foo"));
 }
 
 TEST_F(RegistrySearchTest, BazDotFoo) {
@@ -88,16 +88,16 @@ TEST_F(RegistrySearchTest, BazDotFoo) {
 }
 
 TEST_F(RegistrySearchTest, BarDotFoo) {
-  EXPECT_EQ(0, GetRegistryLength("bar.foo"));
-  EXPECT_EQ(0, GetRegistryLength(".bar.foo"));
+  EXPECT_EQ(7, GetRegistryLength("bar.foo"));
+  EXPECT_EQ(7, GetRegistryLength(".bar.foo"));
 
   // Our ruleset includes both "bar.foo" and "*.bar.foo". In all
   // cases, "*.bar.foo" should take precendence, since the list format
   // specification says: "If a hostname matches more than one rule in
   // the file, the longest matching rule (the one with the most
   // levels) will be used.".
-  EXPECT_EQ(0, GetRegistryLength("www.bar.foo"));
-  EXPECT_EQ(0, GetRegistryLength("foo.bar.foo"));
+  EXPECT_EQ(11, GetRegistryLength("www.bar.foo"));
+  EXPECT_EQ(11, GetRegistryLength("foo.bar.foo"));
 
   // Tests for children of bar.foo (foo.bar.foo,
   // *.bar.foo). foo.bar.foo is redundant however we want to verify
@@ -107,7 +107,7 @@ TEST_F(RegistrySearchTest, BarDotFoo) {
   EXPECT_EQ(11, GetRegistryLength("www.zzz.bar.foo"));
   EXPECT_EQ(12, GetRegistryLength("www.asdf.bar.foo"));
   EXPECT_EQ(9, GetRegistryLength("z.a.bar.foo"));
-  EXPECT_EQ(0, GetRegistryLength(".a.bar.foo"));
+  EXPECT_EQ(9, GetRegistryLength(".a.bar.foo"));
 }
 
 TEST_F(RegistrySearchTest, StarDotFoo) {
@@ -121,18 +121,18 @@ TEST_F(RegistrySearchTest, StarDotFoo) {
   EXPECT_EQ(7, GetRegistryLength("www.baz.zzz.foo"));
 
   // foo.*.foo:
-  EXPECT_EQ(0, GetRegistryLength("foo.a.foo"));
-  EXPECT_EQ(0, GetRegistryLength(".foo.a.foo"));
-  EXPECT_EQ(0, GetRegistryLength("..foo.a.foo"));
+  EXPECT_EQ(9, GetRegistryLength("foo.a.foo"));
+  EXPECT_EQ(9, GetRegistryLength(".foo.a.foo"));
+  EXPECT_EQ(9, GetRegistryLength("..foo.a.foo"));
   EXPECT_EQ(9, GetRegistryLength("www.foo.a.foo"));
   EXPECT_EQ(9, GetRegistryLength("www.foo.b.foo"));
   EXPECT_EQ(11, GetRegistryLength("www.foo.zzz.foo"));
   EXPECT_EQ(11, GetRegistryLength("www.foo.zzz.foo"));
 
   // *.*.foo:
-  EXPECT_EQ(0, GetRegistryLength("a.a.foo"));
-  EXPECT_EQ(0, GetRegistryLength("b.b.foo"));
-  EXPECT_EQ(0, GetRegistryLength("zzz.zzz.foo"));
+  EXPECT_EQ(7, GetRegistryLength("a.a.foo"));
+  EXPECT_EQ(7, GetRegistryLength("b.b.foo"));
+  EXPECT_EQ(11, GetRegistryLength("zzz.zzz.foo"));
   EXPECT_EQ(7, GetRegistryLength("a.a.a.foo"));
   EXPECT_EQ(7, GetRegistryLength("b.b.b.foo"));
   EXPECT_EQ(11, GetRegistryLength("www.zzz.zzz.foo"));
@@ -144,9 +144,9 @@ TEST_F(RegistrySearchTest, UnknownRegistries) {
   EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries(".foo.bar"));
   EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("..foo.bar"));
   EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("foo..bar"));
-  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("bar"));
-  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries(".bar"));
-  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("..bar"));
+  EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("bar"));
+  EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries(".bar"));
+  EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("..bar"));
   EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("a.foo.com.."));
 }
 

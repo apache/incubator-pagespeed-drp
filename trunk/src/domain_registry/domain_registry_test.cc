@@ -15,6 +15,10 @@
 #include "domain_registry/domain_registry.h"
 #include "domain_registry/testing/test_entry.h"
 
+extern "C" {
+#include "domain_registry/private/assert.h"
+}  // extern "C"
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Include the generated file that contains the actual registry tables.
@@ -42,12 +46,40 @@ TEST_F(DomainRegistryTest, All) {
     // Get the substring that represents the actual registry.
     const char* registry = hostname + strlen(hostname) - actual_registry_len;
     EXPECT_EQ('.', *(registry - 1)) << hostname;
+    if (test_entry->is_exception_rule != 0) {
+      // For exception rules, the returned registry length isn't the
+      // same as the length of the registry. For instance if we have
+      // rule !foo.bar and receive input www.foo.bar, we would expect
+      // a registry length of 3. However, passing in just that
+      // registry ("bar") would no longer trigger the exception
+      // rule. Instead we need to pass in the registry plus the
+      // exception component (e.g. "foo.bar"). To find
+      // "foo.bar" we need to search backwards to the previous dot.
+
+      // First verify that passing in just the registry (e.g. "bar")
+      // produces a registry length of 0:
+      EXPECT_EQ(0, GetRegistryLength(registry)) << hostname << ", " << registry;
+
+      // Skip over the dot that precedes the registry before beginning
+      // to search for the next dot.
+      registry -= 2;
+
+      // Walk backwards until we find the next dot.
+      while (*registry != '.') {
+        EXPECT_GT(registry, hostname) << hostname << ", " << registry;
+        --registry;
+      }
+      // The registry starts immediately after the dot.
+      ++registry;
+
+      EXPECT_EQ('.', *(registry - 1)) << hostname << ", " << registry;
+    }
 
     // When we pass in just the registry and ask for the registry
-    // length, we expect to always get length 0, which indicates that
-    // there is not a match.
+    // length, we expect to get the registry length.
     actual_registry_len = GetRegistryLength(registry);
-    EXPECT_EQ(0, actual_registry_len) << hostname;
+    EXPECT_EQ(expected_registry_len, actual_registry_len)
+        << hostname << ", " << registry;
   }
 }
 
@@ -60,21 +92,83 @@ TEST_F(DomainRegistryTest, Examples) {
   EXPECT_EQ(0, GetRegistryLength("a.b.co..uk"));
   EXPECT_EQ(0, GetRegistryLength("C:"));
   EXPECT_EQ(0, GetRegistryLength("google.com.."));
-  EXPECT_EQ(0, GetRegistryLength("192.168.0.1"));
   EXPECT_EQ(0, GetRegistryLength("bar"));
-  EXPECT_EQ(0, GetRegistryLength("co.uk"));
+  EXPECT_EQ(5, GetRegistryLength("co.uk"));
   EXPECT_EQ(0, GetRegistryLength("foo.bar"));
-  EXPECT_EQ(0, GetRegistryLength("bar"));
   EXPECT_EQ(0, GetRegistryLength("foo.臺灣"));
   EXPECT_EQ(11, GetRegistryLength("foo.xn--nnx388a"));
 
   EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("foo.bar"));
-  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("bar"));
+  EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("bar"));
   EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("www.google.com"));
-  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("com"));
-  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("co.uk"));
+  EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("com"));
+  EXPECT_EQ(5, GetRegistryLengthAllowUnknownRegistries("co.uk"));
   EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("foo.臺灣"));
   EXPECT_EQ(11, GetRegistryLengthAllowUnknownRegistries("foo.xn--nnx388a"));
+
+  // It is an error to pass in an IP address but we include some tests
+  // to verify that they do not cause crashes. The actual return
+  // values are not specified so we don't expect specific values for
+  // these calls.
+  GetRegistryLength("192.168.0.1");
+  GetRegistryLength("2001:0db8:85a3:0000:0000:8a2e:0370:7334");
+  GetRegistryLengthAllowUnknownRegistries("192.168.0.1");
+  GetRegistryLengthAllowUnknownRegistries(
+      "2001:0db8:85a3:0000:0000:8a2e:0370:7334");
+}
+
+class AssertHandlerTest : public ::testing::Test {
+ protected:
+  static void TestAssertHandler(
+      const char* file, int line, const char* cond_str) {
+    g_assert_file = file;
+    g_assert_line = line;
+    g_assert_cond_str = cond_str;
+  }
+
+  virtual void SetUp() {
+    ClearAssertion();
+  }
+
+  void ClearAssertion() {
+    g_assert_file = NULL;
+    g_assert_line = -1;
+    g_assert_cond_str = NULL;
+  }
+
+  void AssertNoAssertion() {
+    AssertAssertion(NULL, -1, NULL);
+  }
+
+  void AssertAssertion(
+      const char* file, int line, const char* cond_str) {
+    ASSERT_EQ(file, g_assert_file);
+    ASSERT_EQ(line, g_assert_line);
+    ASSERT_EQ(cond_str, g_assert_cond_str);
+  }
+
+  static const char* g_assert_file;
+  static int g_assert_line;
+  static const char* g_assert_cond_str;
+
+  static const char* const kFilename;
+  static const char* const kCondStr;
+};
+
+const char* AssertHandlerTest::g_assert_file = NULL;
+int AssertHandlerTest::g_assert_line = -1;
+const char* AssertHandlerTest::g_assert_cond_str = NULL;
+
+// dummy values
+const char* const AssertHandlerTest::kFilename = "filename";
+const char* const AssertHandlerTest::kCondStr = "cond str";
+
+TEST_F(AssertHandlerTest, OverrideAssertHandler) {
+  SetDomainRegistryAssertHandler(TestAssertHandler);
+  DoAssert(kFilename, 1, kCondStr, 1);
+  AssertNoAssertion();
+  DoAssert(kFilename, 1, kCondStr, 0);
+  AssertAssertion(kFilename, 1, kCondStr);
 }
 
 }  // namespace

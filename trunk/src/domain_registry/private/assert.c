@@ -14,16 +14,26 @@
 
 #include "domain_registry/private/assert.h"
 
+#include "domain_registry/domain_registry.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+void DefaultAssertHandler(const char* file, int line, const char* cond_str) {
+    fprintf(stderr, "%s:%d. CHECK failed: %s\n", file, line, cond_str);
+    abort();
+}
+
+static DomainRegistryAssertHandler g_assert_hander = DefaultAssertHandler;
 
 void DoAssert(const char* file,
               int line,
               const char* condition_str,
               int condition) {
   if (condition == 0) {
-    fprintf(stderr, "%s:%d. CHECK failed: %s\n", file, line, condition_str);
-    abort();
+    g_assert_hander(file, line, condition_str);
   }
 }
 
+void SetDomainRegistryAssertHandler(DomainRegistryAssertHandler handler) {
+  g_assert_hander = handler;
+}
