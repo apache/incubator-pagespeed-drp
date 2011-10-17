@@ -63,11 +63,12 @@ class TableSerializer(object):
           raise OverflowError(
               'Values %d %d %d out of range.' %
               (component_offset, child_node_offset, num_children))
-      out.append(r'  { %5d, %5d, %5d, %d },  // %s' % (component_offset,
-                                                       child_node_offset,
-                                                       num_children,
-                                                       is_root,
-                                                       node.GetIdentifier('.')))
+      out.append(r'  { %5d, %5d, %5d, %d },  /* %s */' % (
+          component_offset,
+          child_node_offset,
+          num_children,
+          is_root,
+          node.GetIdentifier('.')))
     return '\n'.join(out)
 
   def SerializeLeafChildNodeTable(self,
@@ -86,7 +87,8 @@ class TableSerializer(object):
       if component_offset > self.max_component_offset:
           raise OverflowError(
               'component_offset %d out of range.' % component_offset)
-      out.append(r'%5d,  // %s' % (component_offset, node.GetIdentifier('.')))
+      out.append(r'%5d,  /* %s */' % (
+          component_offset, node.GetIdentifier('.')))
     return '\n'.join(out)
 
   @staticmethod

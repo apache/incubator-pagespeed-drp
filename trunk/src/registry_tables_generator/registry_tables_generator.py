@@ -203,13 +203,13 @@ def RegistryTablesGenerator(in_file, out_file, out_test_file):
                                                 child_node_offset_bits = 13,
                                                 num_children_bits = 11)
 
-  out_file.write('// Size of kStringTable %d\n' %
+  out_file.write('/* Size of kStringTable %d */\n' %
                  len(string_table.GetStringTable()))
-  out_file.write('// Size of kNodeTable %d\n' %
+  out_file.write('/* Size of kNodeTable %d */\n' %
                  len(node_table.GetNodeTable()))
-  out_file.write('// Size of kLeafNodeTable %d\n' %
+  out_file.write('/* Size of kLeafNodeTable %d */\n' %
                  len(node_table.GetLeafNodeTable()))
-  out_file.write('// Total size %d bytes\n' % (
+  out_file.write('/* Total size %d bytes */\n' % (
       # Each entry in the string table is a char (1 byte).
       len(string_table.GetStringTable()) +
       # Each entry in the node table is 5 bytes:
