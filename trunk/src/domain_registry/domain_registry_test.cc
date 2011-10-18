@@ -95,6 +95,22 @@ TEST_F(DomainRegistryTest, Basic) {
   EXPECT_EQ(0, GetRegistryLength(". . "));
   EXPECT_EQ(0, GetRegistryLength(" ."));
   EXPECT_EQ(0, GetRegistryLength(" . "));
+
+  // The domain registry provider does not do any hostname-part
+  // validation, so it assumes space and other characters are valid
+  // hostnames. It is the responsibility of the caller to verify the
+  // validity of the hostname.
+  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries(NULL));
+  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries(""));
+  EXPECT_EQ(1, GetRegistryLengthAllowUnknownRegistries(" "));
+  EXPECT_EQ(2, GetRegistryLengthAllowUnknownRegistries("  "));
+  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("."));
+  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries(".."));
+  EXPECT_EQ(0, GetRegistryLengthAllowUnknownRegistries("..."));
+  EXPECT_EQ(2, GetRegistryLengthAllowUnknownRegistries(". ."));
+  EXPECT_EQ(1, GetRegistryLengthAllowUnknownRegistries(". . "));
+  EXPECT_EQ(2, GetRegistryLengthAllowUnknownRegistries(" ."));
+  EXPECT_EQ(1, GetRegistryLengthAllowUnknownRegistries(" . "));
 }
 
 TEST_F(DomainRegistryTest, Examples) {
