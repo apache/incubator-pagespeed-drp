@@ -262,6 +262,9 @@ size_t GetRegistryLength(const char* hostname) {
   char* buf;
   size_t registry_length;
 
+  if (hostname == NULL) {
+    return 0;
+  }
   if (IsValidHostname(hostname) == 0) {
     return 0;
   }
@@ -292,6 +295,9 @@ size_t GetRegistryLengthAllowUnknownRegistries(const char* hostname) {
   char* buf;
   size_t registry_length;
 
+  if (hostname == NULL) {
+    return 0;
+  }
   if (IsValidHostname(hostname) == 0) {
     return 0;
   }

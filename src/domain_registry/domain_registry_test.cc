@@ -83,6 +83,20 @@ TEST_F(DomainRegistryTest, All) {
   }
 }
 
+TEST_F(DomainRegistryTest, Basic) {
+  EXPECT_EQ(0, GetRegistryLength(NULL));
+  EXPECT_EQ(0, GetRegistryLength(""));
+  EXPECT_EQ(0, GetRegistryLength(" "));
+  EXPECT_EQ(0, GetRegistryLength("  "));
+  EXPECT_EQ(0, GetRegistryLength("."));
+  EXPECT_EQ(0, GetRegistryLength(".."));
+  EXPECT_EQ(0, GetRegistryLength("..."));
+  EXPECT_EQ(0, GetRegistryLength(". ."));
+  EXPECT_EQ(0, GetRegistryLength(". . "));
+  EXPECT_EQ(0, GetRegistryLength(" ."));
+  EXPECT_EQ(0, GetRegistryLength(" . "));
+}
+
 TEST_F(DomainRegistryTest, Examples) {
   EXPECT_EQ(3, GetRegistryLength("www.google.com"));
   EXPECT_EQ(3, GetRegistryLength("WWW.gOoGlE.cOm"));
