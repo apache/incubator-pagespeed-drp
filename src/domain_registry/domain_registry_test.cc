@@ -147,6 +147,26 @@ TEST_F(DomainRegistryTest, Examples) {
       "2001:0db8:85a3:0000:0000:8a2e:0370:7334");
 }
 
+// Passes in all combinations of inputs that are three characters in
+// length, to verify that none of those inputs can cause crashes.
+TEST_F(DomainRegistryTest, BruteForceCrashFuzzer) {
+  const size_t kNumChars = 3;
+  const size_t kMaxValue = 1 << (8 * kNumChars);
+  unsigned char buf[kNumChars + 1];
+  memset(buf, 0, kNumChars + 1);
+  for (size_t i = 0; i < kMaxValue; ++i) {
+    size_t offset = kNumChars;
+    for (size_t val = i; val > 0; val /= 256) {
+      --offset;
+      buf[offset] = val % 256;
+    }
+    ASSERT_EQ(0, buf[kNumChars]);  // Make sure we are still null-terminated.
+    const char* candidate = reinterpret_cast<char*>(&(buf[offset]));
+    GetRegistryLength(candidate);
+    GetRegistryLengthAllowUnknownRegistries(candidate);
+  }
+}
+
 class AssertHandlerTest : public ::testing::Test {
  protected:
   static void TestAssertHandler(
