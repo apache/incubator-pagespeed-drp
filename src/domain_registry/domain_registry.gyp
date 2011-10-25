@@ -22,9 +22,9 @@
       ],
       'sources': [
         'private/registry_search.c',
-        'private/registry_search.h',
         'private/registry_types.h',
         'private/string_util.h',
+        'private/trie_node.h',
         'private/trie_search.c',
         'private/trie_search.h',
       ],
