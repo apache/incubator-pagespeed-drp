@@ -124,7 +124,7 @@ static const char* GetNextHostnamePartImpl(const char* start,
      * Special case: a single trailing dot indicates a fully-qualified
      * domain name. Skip over it.
      */
-     if (*(end - 1) == 0) {
+    if (end > start && *(end - 1) == sep) {
       *ctx = (void*) (end - 1);
     }
   }
