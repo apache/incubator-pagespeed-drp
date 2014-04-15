@@ -21,7 +21,7 @@
 #pragma pack(1)
 
 /*
- * TrieNode represents a single node in a Trie. It uses 5 bytes of
+ * TrieNode represents a single node in a Trie. It uses 6 bytes of
  * storage.
  */
 struct TrieNode {
@@ -29,19 +29,19 @@ struct TrieNode {
    * Index in the string table for the hostname-part associated with
    * this node.
    */
-  unsigned int string_table_offset  : 15;
+  unsigned int string_table_offset  : 21;
 
   /*
    * Offset of the first child of this node in the node table. All
    * children are stored adjacent to each other, sorted
    * lexicographically by their hostname parts.
    */
-  unsigned int first_child_offset   : 13;
+  unsigned int first_child_offset   : 14;
 
   /*
    * Number of children of this node.
    */
-  unsigned int num_children         : 11;
+  unsigned int num_children         : 12;
 
   /*
    * Whether this node is a "terminal" node. A terminal node is one
