@@ -48,16 +48,16 @@ The resulting C output to represent the trie would look like:
 
 struct TrieNode {
   // Index of the hostname-part in the kStringTable.
-  unsigned int component_offset  : 15;
+  unsigned int component_offset  : 21;
 
   // Index of the first child node in the kNodeTable or
   // kLeafNodeTable. A value >= kLeafChildOffset is an
   // offset into the kLeafNodeTable. All child nodes are
   // adjacent to one another.
-  unsigned int child_node_offset : 13;
+  unsigned int child_node_offset : 14;
 
   // The number of children for this node.
-  unsigned int num_children      : 11;
+  unsigned int num_children      : 12;
 
   // Whether or not this node is a terminal node. Terminal
   // nodes are those that represent the last hostname-part
@@ -199,9 +199,9 @@ def RegistryTablesGenerator(in_file, out_file, out_test_file):
   # serialization process. TODO(bmcquade): use this information to
   # also generate the C header file with the necessary struct
   # definitions so we don't duplicate the struct definitions.
-  serializer = table_serializer.TableSerializer(component_offset_bits = 15,
-                                                child_node_offset_bits = 13,
-                                                num_children_bits = 11)
+  serializer = table_serializer.TableSerializer(component_offset_bits = 21,
+                                                child_node_offset_bits = 14,
+                                                num_children_bits = 12)
 
   out_file.write('/* Size of kStringTable %d */\n' %
                  len(string_table.GetStringTable()))
@@ -212,9 +212,9 @@ def RegistryTablesGenerator(in_file, out_file, out_test_file):
   out_file.write('/* Total size %d bytes */\n' % (
       # Each entry in the string table is a char (1 byte).
       len(string_table.GetStringTable()) +
-      # Each entry in the node table is 5 bytes:
-      # 15 bits + 13 bits + 11 bits + 1 bit = 40 bits = 5 bytes.
-      len(node_table.GetNodeTable()) * 5 +
+      # Each entry in the node table is 6 bytes:
+      # 21 bits + 14 bits + 12 bits + 1 bit = 48 bits = 6 bytes.
+      len(node_table.GetNodeTable()) * 6 +
       # Each entry in the leaf node table is 2 bytes (1 uint16).
       len(node_table.GetLeafNodeTable()) * 2))
   out_file.write('\n')
