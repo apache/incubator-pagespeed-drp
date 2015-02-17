@@ -160,7 +160,7 @@ const struct TrieNode* FindRegistryNode(const char* component,
 
     /* We'll be searching the specified parent node's children. */
     start = g_node_table + parent->first_child_offset;
-    end = start + (parent->num_children - 1);
+    end = start + ((int) parent->num_children - 1);
   }
   current = FindNodeInRange(component, start, end);
   if (current != NULL) {
@@ -229,7 +229,7 @@ const char* FindRegistryLeafNode(const char* component,
 
   offset = parent->first_child_offset - g_leaf_node_table_offset;
   leaf_start = g_leaf_node_table + offset;
-  leaf_end = leaf_start + (parent->num_children - 1);
+  leaf_end = leaf_start + ((int) parent->num_children - 1);
   match = FindLeafNodeInRange(component,
                               leaf_start,
                               leaf_end);
