@@ -119,14 +119,21 @@ TEST_F(DomainRegistryTest, Examples) {
   EXPECT_EQ(3, GetRegistryLength("..google.com"));
   EXPECT_EQ(4, GetRegistryLength("google.com."));
   EXPECT_EQ(5, GetRegistryLength("a.b.co.uk"));
-  EXPECT_EQ(0, GetRegistryLength("a.b.co..uk"));
+  EXPECT_EQ(2, GetRegistryLength("a.b.co..uk"));
   EXPECT_EQ(0, GetRegistryLength("C:"));
   EXPECT_EQ(0, GetRegistryLength("google.com.."));
-  EXPECT_EQ(0, GetRegistryLength("bar"));
+  EXPECT_EQ(3, GetRegistryLength("bar"));
+  EXPECT_EQ(3, GetRegistryLength("example.bar"));
   EXPECT_EQ(5, GetRegistryLength("co.uk"));
-  EXPECT_EQ(0, GetRegistryLength("foo.bar"));
+  EXPECT_EQ(3, GetRegistryLength("foo.bar"));
   EXPECT_EQ(0, GetRegistryLength("foo.臺灣"));
   EXPECT_EQ(11, GetRegistryLength("foo.xn--nnx388a"));
+  EXPECT_EQ(22, GetRegistryLength("test.pagespeedmobilizer.com"));
+  EXPECT_EQ(13, GetRegistryLength("www.amazonaws.com"));
+  EXPECT_EQ(36, GetRegistryLength("foo.ap-northeast-1.compute.amazonaws.com"));
+  EXPECT_EQ(11, GetRegistryLength("foo.anything.il"));
+  EXPECT_EQ(5, GetRegistryLength("foo.co.il"));
+  EXPECT_EQ(14, GetRegistryLength("foo.blogspot.co.il"));
 
   EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("foo.bar"));
   EXPECT_EQ(3, GetRegistryLengthAllowUnknownRegistries("bar"));
