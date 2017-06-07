@@ -159,12 +159,12 @@ class StringTableBuilder(object):
 
     # Return the candidate node with the smallest chain length.
     # oschaaf(XXX):
-    # We sort on x.GetIdentifier() too to avoid inconistent results between
+    # We sort on x.GetIdentifier() too to avoid inconsistent results between
     # 32 bits and 64 bits systems running this script in case multiple
-    # candidates have the same (minimum) chain lenght.
-    # Though not sorting on x.GetIdentifier() doesn't seem to affact validity
+    # candidates have the same (minimum) chain length.
+    # Though not sorting on x.GetIdentifier() doesn't seem to affect validity
     # the consistency is helpful in that it will avoid future debugging 
-    # session.
+    # sessions.
     s = sorted(candidates,
                key = lambda x: (len(x.GetParentChain()), x.GetIdentifier()))
     return s[0]
