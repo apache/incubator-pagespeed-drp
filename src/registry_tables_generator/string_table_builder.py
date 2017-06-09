@@ -157,10 +157,14 @@ class StringTableBuilder(object):
     candidates = (StringTableBuilder._FindMostShallowLeafNode(child)
                   for child in node.GetChildren())
 
-    # Construct a generator that produces pairs of
-    # (candidate_parent_chain_len, candidate_node).
-    cost_candidate_pairs = ((len(candidate.GetParentChain()), candidate)
-                            for candidate in candidates)
-
     # Return the candidate node with the smallest chain length.
-    return min(cost_candidate_pairs)[1]
+    # oschaaf(XXX):
+    # We sort on x.GetIdentifier() too to avoid inconsistent results between
+    # 32 bits and 64 bits systems running this script in case multiple
+    # candidates have the same (minimum) chain length.
+    # Though not sorting on x.GetIdentifier() doesn't seem to affect validity
+    # the consistency is helpful in that it will avoid future debugging 
+    # sessions.
+    s = sorted(candidates,
+               key = lambda x: (len(x.GetParentChain()), x.GetIdentifier()))
+    return s[0]
