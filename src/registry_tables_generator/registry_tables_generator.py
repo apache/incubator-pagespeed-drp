@@ -1,4 +1,4 @@
-#!/usr/bin/python2.4
+#!/usr/bin/env python2
 #
 # Copyright 2011 Google Inc. All Rights Reserved.
 #
@@ -95,6 +95,11 @@ import string_table_builder
 import table_serializer
 import test_table_builder
 import trie_node
+
+try:
+  unicode        # Python 2
+except NameError:
+  unicode = str  # Python 3
 
 
 def _ReadRulesFromFile(infile):
