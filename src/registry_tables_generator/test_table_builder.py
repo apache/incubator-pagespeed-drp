@@ -37,7 +37,7 @@ class TestTableBuilder(object):
     rules).
     """
     for rule in rules:
-      parts = rule.split('.')
+      parts = str(rule).split('.')
       first = parts[0]
       host = 'example'
       if first == '*':

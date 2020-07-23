@@ -111,7 +111,7 @@ def _ReadRulesFromFile(infile):
   # Get the idna representation of the rule. See
   # http://en.wikipedia.org/wiki/Internationalized_domain_name for
   # more information.
-  return [unicode(line.strip(), 'utf-8').encode('idna')
+  return [unicode(line.strip()).encode('idna')
           for line in infile
           if line.strip() and not line.strip().startswith('//')]
 
@@ -132,7 +132,7 @@ def _BuildHostnameSuffixTrie(rules):
   """
   trie = trie_node.TrieNode()
   for rule in rules:
-    hostname_parts = rule.split('.')
+    hostname_parts = str(rule).split('.')
     node = trie
     for hostname_part in reversed(hostname_parts):
       node = node.GetOrCreateChild(hostname_part)
@@ -164,7 +164,7 @@ def _BuildStringTableSuffixTrie(rules):
   """
   trie = trie_node.TrieNode()
   for rule in rules:
-    hostname_parts = rule.split('.')
+    hostname_parts = str(rule).split('.')
     for hostname_part in hostname_parts:
       node = trie
       # NOTE: iterating characters in reverse order assumes that there
@@ -185,7 +185,6 @@ def RegistryTablesGenerator(in_file, out_file, out_test_file):
     out_file: file to write registry suffix string tables to
     out_test_file: file to write registry suffix test cases to
   """
-
   rules = _ReadRulesFromFile(in_file)
 
   hostname_part_trie = _BuildHostnameSuffixTrie(rules)
@@ -262,8 +261,7 @@ def main(argv):
     argv[3]: out_test_file: the file to write registry suffix test cases to
   """
   if len(argv) != 4:
-    print >> sys.stderr, (
-      'Usage: gen_string_table.py in_file out_file, out_test_file')
+    sys.stderr.writelines(['Usage: gen_string_table.py in_file out_file, out_test_file'])
     return 1
 
   in_filename = argv[1]
